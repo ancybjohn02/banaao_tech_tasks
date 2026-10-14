@@ -1,5 +1,7 @@
 # Kestrel Home — Service Request Routing
 
+<img width="1422" height="762" alt="image" src="https://github.com/user-attachments/assets/9a1a8c49-d498-46bf-849e-6faa548864cd" />
+
 An AI-assisted service-request routing prototype. It predicts a destination
 team from request text, request metadata, and date-derived features.
 
