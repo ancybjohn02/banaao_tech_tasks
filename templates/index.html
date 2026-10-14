@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101a2c">
+  <title>Kestrel | Service Desk</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="/">
+        <span class="brand-mark">K</span>
+        <span>
+          <strong>KESTREL</strong>
+          <small>HOME SERVICE DESK</small>
+        </span>
+      </a>
+
+      <div class="nav-label">WORKSPACE</div>
+      <a class="nav-item active" href="/">
+        <span class="nav-icon">↗</span>
+        Route a request
+      </a>
+      <a class="nav-item" href="/docs" target="_blank" rel="noreferrer">
+        <span class="nav-icon">⌘</span>
+        API documentation
+      </a>
+
+      <div class="sidebar-bottom">
+        <div class="status-indicator">
+          <span class="status-dot"></span>
+          <span>
+            <strong>Routing service</strong>
+            <small id="service-status">Checking connection…</small>
+          </span>
+        </div>
+        <p>AI-assisted routing<br>Human-reviewed decisions</p>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div>
+          <div class="eyebrow">OPERATIONS / REQUEST ROUTING</div>
+          <h1>Service desk</h1>
+        </div>
+        <div class="topbar-right">
+          <span class="live-pill"><span></span> MODEL SERVICE</span>
+        </div>
+      </header>
+
+      <section class="welcome">
+        <div>
+          <div class="eyebrow light">INTELLIGENT REQUEST ASSIGNMENT</div>
+          <h2>Get every request<br>to the right team.</h2>
+          <p>
+            Enter the service details below. The routing model will recommend
+            a team for your review.
+          </p>
+        </div>
+        <div class="welcome-art" aria-hidden="true">
+          <div class="orbit orbit-one"></div>
+          <div class="orbit orbit-two"></div>
+          <div class="orbit-core">K</div>
+          <span class="orbit-node node-one">↗</span>
+          <span class="orbit-node node-two">✓</span>
+          <span class="orbit-node node-three">✳</span>
+        </div>
+      </section>
+
+      <div class="content-grid">
+        <section class="panel form-panel">
+          <div class="panel-heading">
+            <div class="step-number">01</div>
+            <div>
+              <h3>Request details</h3>
+              <p>Provide the information available to your team.</p>
+            </div>
+          </div>
+
+          <form id="routing-form">
+            <div class="field">
+              <label for="request_id">Request ID <span>OPTIONAL</span></label>
+              <input id="request_id" name="request_id"
+                     placeholder="e.g. SR-10482">
+            </div>
+
+            <div class="field">
+              <label for="created_at_ist">Request date and time</label>
+              <input id="created_at_ist" name="created_at_ist"
+                     type="datetime-local">
+              <small class="field-hint">
+                If omitted, the model will handle the date as missing.
+              </small>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="channel">Channel</label>
+                <input id="channel" name="channel" required
+                       placeholder="Use a training-data value">
+              </div>
+              <div class="field">
+                <label for="source">Source</label>
+                <input id="source" name="source" required
+                       placeholder="Use a training-data value">
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="product_family">Product family</label>
+                <input id="product_family" name="product_family" required
+                       placeholder="Product category">
+              </div>
+              <div class="field">
+                <label for="warranty_status">Warranty status</label>
+                <input id="warranty_status" name="warranty_status" required
+                       placeholder="Warranty status">
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="request_text">Request description</label>
+              <textarea id="request_text" name="request_text" required
+                        minlength="3" maxlength="10000" rows="5"
+                        placeholder="Describe the customer's issue, symptoms, or request…"></textarea>
+              <div class="textarea-footer">
+                <span>Include the customer's main issue and relevant details.</span>
+                <span id="char-count">0 / 10000</span>
+              </div>
+            </div>
+
+            <div id="form-error" class="error-message" role="alert"
+                 hidden></div>
+
+            <button id="submit-button" class="primary-button" type="submit">
+              <span id="button-label">Generate routing recommendation</span>
+              <span aria-hidden="true">→</span>
+            </button>
+            <p class="form-footnote">
+              The recommendation supports staff decisions; it does not
+              automatically assign or transfer the request.
+            </p>
+          </form>
+        </section>
+
+        <section class="panel result-panel" aria-live="polite">
+          <div class="panel-heading">
+            <div class="step-number step-muted">02</div>
+            <div>
+              <h3>Routing recommendation</h3>
+              <p>Prediction results appear here.</p>
+            </div>
+          </div>
+
+          <div id="empty-state" class="empty-state">
+            <div class="empty-illustration">
+              <span class="empty-doc">≡</span>
+              <span class="empty-spark">✦</span>
+            </div>
+            <h4>Ready when you are</h4>
+            <p>
+              Complete the request details and generate a recommendation
+              to see the suggested team and alternatives.
+            </p>
+            <div class="empty-steps">
+              <span>01</span> Enter details
+              <span class="step-arrow">→</span>
+              <span>02</span> Review result
+            </div>
+          </div>
+
+          <div id="loading-state" class="loading-state" hidden>
+            <div class="spinner"></div>
+            <h4>Analyzing request</h4>
+            <p>Generating a routing recommendation…</p>
+          </div>
+
+          <div id="result-state" hidden>
+            <div class="result-banner">
+              <div class="result-check">✓</div>
+              <div>
+                <span class="result-overline">SUGGESTED TEAM</span>
+                <h2 id="predicted-team">—</h2>
+                <p>Recommended destination for staff review</p>
+              </div>
+            </div>
+
+            <div class="confidence-card">
+              <div class="confidence-heading">
+                <span>Model confidence estimate</span>
+                <strong id="confidence-value">—</strong>
+              </div>
+              <div class="progress-track">
+                <div id="confidence-bar" class="progress-fill"></div>
+              </div>
+              <p>
+                This probability is not a guarantee of correctness and may
+                not be calibrated.
+              </p>
+            </div>
+
+            <div class="result-section">
+              <h4>Other possible teams</h4>
+              <div id="alternatives-list" class="alternatives-list"></div>
+            </div>
+
+            <div class="result-section">
+              <h4>Request information considered</h4>
+              <ul id="signals-list" class="signals-list"></ul>
+            </div>
+
+            <div class="review-note">
+              <span class="review-icon">i</span>
+              <p id="disclaimer">
+                Review the request before acting on the recommendation.
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <footer class="page-footer">
+        <span>KESTREL HOME · SERVICE OPERATIONS</span>
+        <span>AI-assisted · Human-reviewed</span>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>
