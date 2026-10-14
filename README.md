@@ -31,3 +31,5 @@ Install the Python dependencies:
 
 ```bash
 python -m venv .venv
+```
+Links: https://www.loom.com/share/2e25a20e680947b880599a18253b5783
